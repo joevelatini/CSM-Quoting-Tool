@@ -1,34 +1,515 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ActivTrak Quoting Tool</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
         }
-        h1 {
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .logo-text {
+            margin-left: 10px;
+            font-size: 24px;
+            font-weight: bold;
             color: #172755;
         }
-        .card {
+        
+        h1, h2, h3 {
+            color: #172755;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
             border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        
+        .manual-adjust {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f8ff;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+        
+        .summary {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th {
+            background-color: #172755;
+            color: white;
+            text-align: left;
+            padding: 10px;
+        }
+        
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-primary {
+            background-color: #2a74e3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-dark {
+            background-color: #172755;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pricing-cards {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .pricing-card {
+            flex: 1;
+            border: 2px solid #ddd;
             border-radius: 8px;
             padding: 20px;
-            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .pricing-card.highlight {
+            border-color: #2a74e3;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        
+        #quoteView {
+            display: none;
+        }
+        
+        @media print {
+            .no-print {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>ActivTrak Quoting Tool</h1>
-    <p>This is a basic test page to verify GitHub Pages is working.</p>
-    
-    <div class="card">
-        <h2>Simple Test Form</h2>
-        <p>The full React tool will be implemented once we confirm GitHub Pages is working.</p>
-        <p>Current status: Testing basic HTML</p>
-        <button onclick="alert('Button works!')">Click Me</button>
+    <div class="container">
+        <!-- Admin View -->
+        <div id="adminView">
+            <div class="logo">
+                <div class="logo-icon">
+                    <div style="position: absolute; width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 35px solid #172755;"></div>
+                    <div style="position: absolute; left: 5px; top: 5px; width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 25px solid #2a74e3;"></div>
+                </div>
+                <div class="logo-text">ActivTrak</div>
+            </div>
+            
+            <h1>ActivTrak Renewal Quote</h1>
+            
+            <div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientName">Client Name</label>
+                        <input type="text" id="clientName">
+                    </div>
+                    <div class="form-group">
+                        <label for="accountManager">Account Manager</label>
+                        <input type="text" id="accountManager">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="currentAmount">Current Contract Amount ($)</label>
+                        <input type="number" id="currentAmount" value="10000">
+                    </div>
+                    <div class="form-group">
+                        <label for="currentDiscount">Current Discount (%)</label>
+                        <input type="number" id="currentDiscount" value="25">
+                    </div>
+                </div>
+                
+                <label class="manual-adjust">
+                    <input type="checkbox" id="manualAdjustment">
+                    <span style="margin-left: 8px; font-weight: bold;">Enable manual price adjustments</span>
+                </label>
+                
+                <div id="pricingInfo" style="margin-top: 20px;">
+                    <h2>Pricing Options</h2>
+                    
+                    <div class="summary">
+                        <p><strong>Current Contract:</strong> <span id="summaryCurrentAmount">$10,000.00</span></p>
+                        <p><strong>Applied Increase:</strong> <span id="summaryIncrease">15</span>%</p>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Contract Term</th>
+                                <th class="text-right">Total Price</th>
+                                <th class="text-right">Annual Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>12 Months</td>
+                                <td class="text-right" id="term12Cell">$11,500.00</td>
+                                <td class="text-right" id="term12Annual">$11,500.00</td>
+                            </tr>
+                            <tr>
+                                <td>24 Months</td>
+                                <td class="text-right" id="term24Cell">$21,850.00</td>
+                                <td class="text-right" id="term24Annual">$10,925.00</td>
+                            </tr>
+                            <tr>
+                                <td>36 Months</td>
+                                <td class="text-right" id="term36Cell">$31,050.00</td>
+                                <td class="text-right" id="term36Annual">$10,350.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="button-group">
+                        <button id="viewQuoteBtn" class="btn-primary">View Client-Ready Quote</button>
+                        <button id="resetBtn" class="btn-secondary">Reset Form</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Client Quote View -->
+        <div id="quoteView">
+            <div class="logo">
+                <div class="logo-icon">
+                    <div style="position: absolute; width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-bottom: 35px solid #172755;"></div>
+                    <div style="position: absolute; left: 5px; top: 5px; width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-bottom: 25px solid #2a74e3;"></div>
+                </div>
+                <div class="logo-text">ActivTrak</div>
+            </div>
+            
+            <h1 style="text-align: center;">ActivTrak Renewal Options</h1>
+            
+            <div id="clientInfo" style="border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-bottom: 20px; display: none;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="padding: 5px; font-weight: bold;">Client:</td>
+                        <td id="clientNameDisplay" style="padding: 5px;">-</td>
+                        <td style="padding: 5px; font-weight: bold;">Account Manager:</td>
+                        <td id="accountManagerDisplay" style="padding: 5px;">-</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="pricing-cards">
+                <!-- 12-Month Option -->
+                <div class="pricing-card">
+                    <h3>12 Months</h3>
+                    <div class="price" id="quote12Price">$11,500.00</div>
+                    <p id="quote12Annual">$11,500.00 per year</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 15px;">Standard pricing</p>
+                </div>
+                
+                <!-- 24-Month Option -->
+                <div class="pricing-card highlight">
+                    <h3>24 Months</h3>
+                    <div class="price" id="quote24Price">$21,850.00</div>
+                    <p id="quote24Annual">$10,925.00 per year</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 15px;">Lock in this rate for 2 years</p>
+                </div>
+                
+                <!-- 36-Month Option -->
+                <div class="pricing-card">
+                    <h3>36 Months</h3>
+                    <div class="price" id="quote36Price">$31,050.00</div>
+                    <p id="quote36Annual">$10,350.00 per year</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 15px;">Best value for long-term partnership</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p style="font-size: 14px;">
+                    For questions or customizations, please contact <span id="contactPerson">your Customer Success Manager</span>.
+                </p>
+                
+                <div class="button-group no-print">
+                    <button id="printBtn" class="btn-dark">Print Quote</button>
+                    <button id="backBtn" class="btn-primary">Back to Quote Generator</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        // Elements
+        const currentAmountInput = document.getElementById('currentAmount');
+        const currentDiscountInput = document.getElementById('currentDiscount');
+        const clientNameInput = document.getElementById('clientName');
+        const accountManagerInput = document.getElementById('accountManager');
+        const manualAdjustmentCheckbox = document.getElementById('manualAdjustment');
+        const viewQuoteBtn = document.getElementById('viewQuoteBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const printBtn = document.getElementById('printBtn');
+        const backBtn = document.getElementById('backBtn');
+        
+        // Display elements
+        const adminView = document.getElementById('adminView');
+        const quoteView = document.getElementById('quoteView');
+        const clientInfo = document.getElementById('clientInfo');
+        const summaryCurrentAmount = document.getElementById('summaryCurrentAmount');
+        const summaryIncrease = document.getElementById('summaryIncrease');
+        const term12Cell = document.getElementById('term12Cell');
+        const term24Cell = document.getElementById('term24Cell');
+        const term36Cell = document.getElementById('term36Cell');
+        const term12Annual = document.getElementById('term12Annual');
+        const term24Annual = document.getElementById('term24Annual');
+        const term36Annual = document.getElementById('term36Annual');
+        const clientNameDisplay = document.getElementById('clientNameDisplay');
+        const accountManagerDisplay = document.getElementById('accountManagerDisplay');
+        const contactPerson = document.getElementById('contactPerson');
+        const quote12Price = document.getElementById('quote12Price');
+        const quote24Price = document.getElementById('quote24Price');
+        const quote36Price = document.getElementById('quote36Price');
+        const quote12Annual = document.getElementById('quote12Annual');
+        const quote24Annual = document.getElementById('quote24Annual');
+        const quote36Annual = document.getElementById('quote36Annual');
+        
+        // Variables to store pricing
+        let term12Price = 11500;
+        let term24Price = 21850;
+        let term36Price = 31050;
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+        
+        // Calculate pricing
+        function calculatePricing() {
+            const currentAmount = parseFloat(currentAmountInput.value) || 10000;
+            const currentDiscount = parseFloat(currentDiscountInput.value) || 25;
+            let increasePercentage = 0;
+            
+            if (currentDiscount >= 40) {
+                increasePercentage = 20;
+            } else if (currentDiscount >= 20 && currentDiscount <= 39) {
+                increasePercentage = 15;
+            } else if (currentDiscount > 0 && currentDiscount < 20) {
+                increasePercentage = 10;
+            }
+            
+            const increaseFactor = 1 + (increasePercentage / 100);
+            const newBaseAmount = currentAmount * increaseFactor;
+            
+            // If not using manual adjustments, update the prices
+            if (!manualAdjustmentCheckbox.checked) {
+                term12Price = newBaseAmount;
+                term24Price = newBaseAmount * 0.95 * 2; // Two years
+                term36Price = newBaseAmount * 0.90 * 3; // Three years
+            }
+            
+            // Update the pricing display
+            summaryCurrentAmount.textContent = formatCurrency(currentAmount);
+            summaryIncrease.textContent = increasePercentage;
+            
+            // Update the pricing table
+            updatePricingTable();
+            
+            return {
+                currentAmount,
+                increasePercentage,
+                term12Price,
+                term24Price,
+                term36Price
+            };
+        }
+        
+        // Update pricing table
+        function updatePricingTable() {
+            if (manualAdjustmentCheckbox.checked) {
+                // Create input elements for manual entry
+                term12Cell.innerHTML = `<input type="number" value="${term12Price}" style="width: 120px; padding: 5px; text-align: right;" id="term12Input">`;
+                term24Cell.innerHTML = `<input type="number" value="${term24Price}" style="width: 120px; padding: 5px; text-align: right;" id="term24Input">`;
+                term36Cell.innerHTML = `<input type="number" value="${term36Price}" style="width: 120px; padding: 5px; text-align: right;" id="term36Input">`;
+                
+                // Add event listeners to the new inputs
+                document.getElementById('term12Input').addEventListener('change', function() {
+                    term12Price = parseFloat(this.value) || term12Price;
+                    term12Annual.textContent = formatCurrency(term12Price);
+                });
+                
+                document.getElementById('term24Input').addEventListener('change', function() {
+                    term24Price = parseFloat(this.value) || term24Price;
+                    term24Annual.textContent = formatCurrency(term24Price / 2);
+                });
+                
+                document.getElementById('term36Input').addEventListener('change', function() {
+                    term36Price = parseFloat(this.value) || term36Price;
+                    term36Annual.textContent = formatCurrency(term36Price / 3);
+                });
+            } else {
+                // Display formatted currency
+                term12Cell.textContent = formatCurrency(term12Price);
+                term24Cell.textContent = formatCurrency(term24Price);
+                term36Cell.textContent = formatCurrency(term36Price);
+            }
+            
+            // Update annual prices
+            term12Annual.textContent = formatCurrency(term12Price);
+            term24Annual.textContent = formatCurrency(term24Price / 2);
+            term36Annual.textContent = formatCurrency(term36Price / 3);
+        }
+        
+        // Update quote view
+        function updateQuoteView() {
+            const clientName = clientNameInput.value;
+            const accountManager = accountManagerInput.value;
+            
+            // Update client info section
+            if (clientName) {
+                clientInfo.style.display = 'block';
+                clientNameDisplay.textContent = clientName;
+                accountManagerDisplay.textContent = accountManager || '-';
+                contactPerson.textContent = accountManager || 'your Customer Success Manager';
+            } else {
+                clientInfo.style.display = 'none';
+                contactPerson.textContent = 'your Customer Success Manager';
+            }
+            
+            // Update pricing
+            quote12Price.textContent = formatCurrency(term12Price);
+            quote24Price.textContent = formatCurrency(term24Price);
+            quote36Price.textContent = formatCurrency(term36Price);
+            quote12Annual.textContent = formatCurrency(term12Price) + ' per year';
+            quote24Annual.textContent = formatCurrency(term24Price / 2) + ' per year';
+            quote36Annual.textContent = formatCurrency(term36Price / 3) + ' per year';
+        }
+        
+        // Reset the form
+        function resetForm() {
+            currentAmountInput.value = 10000;
+            currentDiscountInput.value = 25;
+            clientNameInput.value = '';
+            accountManagerInput.value = '';
+            manualAdjustmentCheckbox.checked = false;
+            calculatePricing();
+        }
+        
+        // Event Listeners
+        currentAmountInput.addEventListener('change', calculatePricing);
+        currentDiscountInput.addEventListener('change', calculatePricing);
+        manualAdjustmentCheckbox.addEventListener('change', function() {
+            calculatePricing();
+        });
+        
+        viewQuoteBtn.addEventListener('click', function() {
+            updateQuoteView();
+            adminView.style.display = 'none';
+            quoteView.style.display = 'block';
+        });
+        
+        resetBtn.addEventListener('click', resetForm);
+        
+        printBtn.addEventListener('click', function() {
+            window.print();
+        });
+        
+        backBtn.addEventListener('click', function() {
+            quoteView.style.display = 'none';
+            adminView.style.display = 'block';
+        });
+        
+        // Initialize
+        calculatePricing();
+    </script>
 </body>
 </html>
