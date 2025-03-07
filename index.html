@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ActivTrak Quoting Tool</title>
+    
+    <!-- React and ReactDOM CDN links -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel for JSX support -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #root {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #root * {
+                visibility: visible;
+            }
+            #root {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 0;
+            }
+            button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        // React component goes here
+        const ActivTrakQuotingTool = () => {
+            // Colors
+            const colors = {
+                darkNavy: '#172755',
+                brightBlue: '#2a74e3',
+                lightBlue: '#87cefa',
+                teal: '#0dc5b9'
+            };
+            
+            // State
+            const [currentContractAmount, setCurrentContractAmount] = React.useState(10000);
+            const [currentDiscount, setCurrentDiscount] = React.useState(25);
+            const [clientName, setClientName] = React.useState('');
+            const [accountManager, setAccountManager] = React.useState('');
+            const [showPrintVersion, setShowPrintVersion] = React.useState(false);
+            const [manualAdjustment, setManualAdjustment] = React.useState(false);
+            const [term12Price, setTerm12Price] = React.useState(11500);
+            const [term24Price, setTerm24Price] = React.useState(21850);
+            const [term36Price, setTerm36Price] = React.useState(31050);
+            const [quoteDetails, setQuoteDetails] = React.useState(null);
+            
+            // Format currency
+            const formatCurrency = (amount) => {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(amount);
+            };
+            
+            // Calculate pricing
+            React.useEffect(() => {
+                let increasePercentage = 0;
+                
+                if (currentDiscount >= 40) {
+                    increasePercentage = 20;
+                } else if (currentDiscount >= 20 && currentDiscount <= 39) {
+                    increasePercentage = 15;
+                } else if (currentDiscount > 0 && currentDiscount < 20) {
+                    increasePercentage = 10;
+                }
+
+                const increaseFactor = 1 + (increasePercentage / 100);
+                const newBaseAmount = currentContractAmount * increaseFactor;
+                
+                const calc12Price = newBaseAmount;
+                const calc24Price = newBaseAmount * 0.95;
+                const calc36Price = newBaseAmount * 0.90;
+                
+                if (!manualAdjustment) {
+                    setTerm12Price(calc12Price);
+                    setTerm24Price(calc24Price);
+                    setTerm36Price(calc36Price);
+                }
+
+                setQuoteDetails({
+                    currentAmount: currentContractAmount,
+                    currentDiscount: currentDiscount,
+                    increasePercentage: increasePercentage,
+                    term12: {
+                        price: manualAdjustment ? term12Price : calc12Price,
+                        savings: 0
+                    },
+                    term24: {
+                        price: manualAdjustment ? term24Price : calc24Price,
+                        savings: newBaseAmount - (manualAdjustment ? term24Price : calc24Price)
+                    },
+                    term36: {
+                        price: manualAdjustment ? term36Price : calc36Price,
+                        savings: newBaseAmount - (manualAdjustment ? term36Price : calc36Price)
+                    }
+                });
+            }, [currentContractAmount, currentDiscount, manualAdjustment, term12Price, term24Price, term36Price]);
+            
+            // Reset form
+            const resetForm = () => {
+                setCurrentContractAmount(10000);
+                setCurrentDiscount(25);
+                setClientName('');
+                setAccountManager('');
+                setManualAdjustment(false);
+            };
+            
+            // Print function
+            const printQuote = () => {
+                window.print();
+            };
+            
+            // Logo component
+            const Logo = () => (
+                <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    padding: '10px 0' 
+                }}>
+                    <div style={{ position: 'relative', width: '40px', height: '40px' }}>
+                        <div style={{ 
+                            position: 'absolute',
+                            width: 0,
+                            height: 0,
+                            borderLeft: '20px solid transparent',
+                            borderRight: '20px solid transparent',
+                            borderBottom: '35px solid #172755',
+                            transform: 'rotate(0deg)'
+                        }} />
+                        <div style={{ 
+                            position: 'absolute',
+                            left: '5px',
+                            top: '5px',
+                            width: 0,
+                            height: 0,
+                            borderLeft: '15px solid transparent',
+                            borderRight: '15px solid transparent',
+                            borderBottom: '25px solid #2a74e3',
+                            transform: 'rotate(0deg)'
+                        }} />
+                    </div>
+                    <span style={{ 
+                        marginLeft: '10px', 
+                        fontSize: '24px', 
+                        fontWeight: 'bold',
+                        color: colors.darkNavy
+                    }}>ActivTrak</span>
+                </div>
+            );
+
+            return (
+                <div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+                    {!showPrintVersion ? (
+                        <>
+                            <Logo />
+                            
+                            <h1 style={{ marginTop: '20px', color: colors.darkNavy }}>ActivTrak Renewal Quote</h1>
+                            
+                            <div style={{ marginBottom: '20px' }}>
+                                <div style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                            Client Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={clientName}
+                                            onChange={(e) => setClientName(e.target.value)}
+                                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                                        />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                            Account Manager
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={accountManager}
+                                            onChange={(e) => setAccountManager(e.target.value)}
+                                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div style={{ display: 'flex', gap: '20px', marginBottom: '10px' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                            Current Contract Amount ($)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={currentContractAmount}
+                                            onChange={(e) => setCurrentContractAmount(Number(e.target.value))}
+                                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                                        />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
+                                            Current Discount (%)
+                                        </label>
+                                        <input
+                                            type="number"
+                                            value={currentDiscount}
+                                            onChange={(e) => setCurrentDiscount(Number(e.target.value))}
+                                            style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div style={{ marginTop: '20px' }}>
+                                    <label style={{ 
+                                        display: 'flex', 
+                                        alignItems: 'center',
+                                        padding: '10px',
+                                        backgroundColor: '#f0f8ff',
+                                        borderRadius: '4px',
+                                        marginBottom: '15px'
+                                    }}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={manualAdjustment} 
+                                            onChange={(e) => setManualAdjustment(e.target.checked)}
+                                            style={{ marginRight: '8px' }}
+                                        />
+                                        <span style={{ fontWeight: 'bold' }}>Enable manual price adjustments</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            {quoteDetails && (
+                                <div style={{ marginTop: '20px' }}>
+                                    <h2>Pricing Options</h2>
+                                    
+                                    <div style={{ 
+                                        backgroundColor: '#f5f5f5', 
+                                        padding: '15px', 
+                                        borderRadius: '8px',
+                                        marginBottom: '20px'
+                                    }}>
+                                        <p><strong>Current Contract:</strong> {formatCurrency(quoteDetails.currentAmount)}</p>
+                                        <p><strong>Applied Increase:</strong> {quoteDetails.increasePercentage}%</p>
+                                    </div>
+                                    
+                                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                        <thead>
+                                            <tr style={{ backgroundColor: colors.darkNavy, color: 'white' }}>
+                                                <th style={{ padding: '10px', textAlign: 'left' }}>Contract Term</th>
+                                                <th style={{ padding: '10px', textAlign: 'right' }}>Total Price</th>
+                                                <th style={{ padding: '10px', textAlign: 'right' }}>Annual Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style={{ borderBottom: '1px solid #eee' }}>
+                                                <td style={{ padding: '10px' }}>12 Months</td>
+                                                <td style={{ padding: '10px', textAlign: 'right' }}>
+                                                    {manualAdjustment ? (
+                                                        <input
+                                                            type="number"
+                                                            value={term12Price}
+                                                            onChange={(e) => setTerm12Price(Number(e.target.value))}
+                                                            style={{ width: '120px', padding: '5px', borderRadius: '4px', border: '1px solid #ccc', textAlign: 'right' }}
+                                                        />
+                                                    ) : (
+                                                        formatCurrency(quoteDetails.term12.price)
+                                                    )}
+                                                </td>
+                                                <td style={{ padding: '10px', textAlign: 'right' }}>
+                                                    {formatCurrency(quoteDetails.term12.price)}
+                                                </td>
+                                            </tr>
+                                            <tr style={{ borderBottom: '1px solid #eee' }}>
+                                                <td style={{ padding: '10px' }}>24 Months</td>
+                                                <td style={{ padding: '10px', textAlign: 'right' }}>
+                                                    {manualAdjustment ? (
+                                                        <input
+                                                            type="number"
+                                                            value={term24Price}
+                                                            onChange={(e) => setTerm24Price(Number(e.target.value))}
+                                                            style={{ width: '120px', padding: '5px', borderRadius: '4px', border: '1px solid #ccc', textAlign: 'right' }}
+                                                        />
+                                                    ) : (
+                                                        formatCurrency(quoteDetails.term24.price)
+                                                    )}
+                                                </td>
+                                                <td style={{ padding: '10px', textAlign: 'right' }}>
+                                                    {formatCurrency(quoteDetails.term24.price / 2)}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style={{ padding: '10px' }}>36 Months</td>
+                                                <td style={{ padding: '10px', textAlign: 'right' }}>
+                                                    {manualAdjustment ? (
+                                                        <input
+                                                            type="number"
+                                                            value={term36Price}
+                                                            onChange={(e) => setTerm36Price(Number(e.target.value))}
+                                                            style={{ width: '120px', padding: '5px', borderRadius: '4px', border: '1px solid #ccc', textAlign: 'right' }}
+                                                        />
+                                                    ) : (
+                                                        formatCurrency(quoteDetails.term36.price)
+                                                    )}
+                                                </td>
+                                                <td style={{ padding: '10px', textAlign: 'right' }}>
+                                                    {formatCurrency(quoteDetails.term36.price / 3)}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    
+                                    <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+                                        <button
+                                            onClick={() => setShowPrintVersion(true)}
+                                            style={{
+                                                backgroundColor: colors.brightBlue,
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '10px 15px',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            View Client-Ready Quote
+                                        </button>
+                                        
+                                        <button
+                                            onClick={resetForm}
+                                            style={{
+                                                backgroundColor: '#f0f0f0',
+                                                color: '#333',
+                                                border: '1px solid #ccc',
+                                                padding: '10px 15px',
+                                                borderRadius: '4px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            Reset Form
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        <div style={{ padding: '20px' }}>
+                            <Logo />
+                            
+                            <h1 style={{ textAlign: 'center', color: colors.darkNavy, margin: '20px 0' }}>ActivTrak Renewal Options</h1>
+                            
+                            {clientName && (
+                                <div style={{ 
+                                    border: '1px solid #ddd',
+                                    borderRadius: '4px',
+                                    padding: '15px',
+                                    marginBottom: '20px'
+                                }}>
+                                    <table style={{ width: '100%' }}>
+                                        <tbody>
+                                            <tr>
+                                                <td style={{ padding: '5px', fontWeight: 'bold' }}>Client:</td>
+                                                <td style={{ padding: '5px' }}>{clientName}</td>
+                                                <td style={{ padding: '5px', fontWeight: 'bold' }}>Account Manager:</td>
+                                                <td style={{ padding: '5px' }}>{accountManager}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                            
+                            <div style={{ marginTop: '30px', display: 'flex', gap: '20px' }}>
+                                {/* 12-Month Option */}
+                                <div style={{ 
+                                    flex: 1, 
+                                    border: '2px solid #ddd', 
+                                    borderRadius: '8px',
+                                    padding: '20px',
+                                    textAlign: 'center'
+                                }}>
+                                    <h3 style={{ color: colors.darkNavy, marginTop: 0 }}>12 Months</h3>
+                                    <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '15px 0' }}>
+                                        {formatCurrency(quoteDetails.term12.price)}
+                                    </div>
+                                    <p style={{ margin: '5px 0' }}>
+                                        {formatCurrency(quoteDetails.term12.price)} per year
+                                    </p>
+                                    <p style={{ fontSize: '14px', color: '#666', marginTop: '15px' }}>
+                                        Standard pricing
+                                    </p>
+                                </div>
+                                
+                                {/* 24-Month Option */}
+                                <div style={{ 
+                                    flex: 1, 
+                                    border: `2px solid ${colors.brightBlue}`, 
+                                    borderRadius: '8px',
+                                    padding: '20px',
+                                    textAlign: 'center',
+                                    boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                                }}>
+                                    <h3 style={{ color: colors.darkNavy, marginTop: 0 }}>24 Months</h3>
+                                    <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '15px 0' }}>
+                                        {formatCurrency(quoteDetails.term24.price)}
+                                    </div>
+                                    <p style={{ margin: '5px 0' }}>
+                                        {formatCurrency(quoteDetails.term24.price / 2)} per year
+                                    </p>
+                                    <p style={{ fontSize: '14px', color: '#666', marginTop: '15px' }}>
+                                        Lock in this rate for 2 years
+                                    </p>
+                                </div>
+                                
+                                {/* 36-Month Option */}
+                                <div style={{ 
+                                    flex: 1, 
+                                    border: '2px solid #ddd', 
+                                    borderRadius: '8px',
+                                    padding: '20px',
+                                    textAlign: 'center'
+                                }}>
+                                    <h3 style={{ color: colors.darkNavy, marginTop: 0 }}>36 Months</h3>
+                                    <div style={{ fontSize: '24px', fontWeight: 'bold', margin: '15px 0' }}>
+                                        {formatCurrency(quoteDetails.term36.price)}
+                                    </div>
+                                    <p style={{ margin: '5px 0' }}>
+                                        {formatCurrency(quoteDetails.term36.price / 3)} per year
+                                    </p>
+                                    <p style={{ fontSize: '14px', color: '#666', marginTop: '15px' }}>
+                                        Best value for long-term partnership
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style={{ marginTop: '40px', borderTop: '1px solid #ddd', paddingTop: '20px' }}>
+                                <p style={{ fontSize: '14px' }}>
+                                    For questions or customizations, please contact {accountManager || 'your Customer Success Manager'}.
+                                </p>
+                                
+                                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                                    <button
+                                        onClick={printQuote}
+                                        style={{
+                                            backgroundColor: colors.darkNavy,
+                                            color: 'white',
+                                            border: 'none',
+                                            padding: '10px 15px',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Print Quote
+                                    </button>
+                                    
+                                    <button
+                                        onClick={() => setShowPrintVersion(false)}
+                                        style={{
+                                            backgroundColor: colors.brightBlue,
+                                            color: 'white',
+                                            border: 'none',
+                                            padding: '10px 15px',
+                                            borderRadius: '4px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Back to Quote Generator
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Render the component to the DOM
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ActivTrakQuotingTool />);
+    </script>
+</body>
+</html>
