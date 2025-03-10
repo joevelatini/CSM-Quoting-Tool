@@ -56,7 +56,7 @@
             font-weight: bold;
         }
         
-        input {
+        input, select {
             width: 100%;
             padding: 8px;
             border-radius: 4px;
@@ -210,7 +210,19 @@
                     </div>
                     <div class="form-group">
                         <label for="currentDiscount">Current Discount (%)</label>
-                        <input type="number" id="currentDiscount" value="25">
+                        <select id="currentDiscount">
+                            <option value="0">0</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                            <option value="25" selected>25</option>
+                            <option value="30">30</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="50">50</option>
+                        </select>
                     </div>
                 </div>
                 
@@ -373,51 +385,59 @@
             }).format(amount);
         }
         
-        // Calculate pricing
+        // Calculate pricing - COMPLETELY REWRITTEN
         function calculatePricing() {
-            const currentAmount = parseFloat(currentAmountInput.value) || 10000;
-            // Use Number instead of parseFloat to handle the case when input is 0
-            const currentDiscount = Number(currentDiscountInput.value);
-            let increasePercentage = 0;
+            const currentAmount = Number(currentAmountInput.value) || 10000;
+            const currentDiscountValue = currentDiscountInput.value;
+            const currentDiscount = Number(currentDiscountValue);
             
-            // Debug to check what value is being read
-            console.log("Current discount value:", currentDiscount, "Type:", typeof currentDiscount);
+            // Debug
+            console.log("Current discount:", currentDiscountValue, 
+                        "as number:", currentDiscount, 
+                        "type:", typeof currentDiscountValue);
             
-            // Completely restructured logic with explicit 0 check first
-            if (currentDiscount === 0) {
-                increasePercentage = 0; // No increase when discount is 0%
-            } else if (currentDiscount >= 40) {
+            // Set increase percentage based on discount tier
+            let increasePercentage;
+            
+            // Explicitly handle the zero case first
+            if (currentDiscountValue === "0" || currentDiscount === 0) {
+                increasePercentage = 0;
+                console.log("Zero discount detected, setting 0% increase");
+            }
+            else if (currentDiscount >= 40) {
                 increasePercentage = 20;
-            } else if (currentDiscount >= 20) {
+            }
+            else if (currentDiscount >= 20) {
                 increasePercentage = 15;
-            } else if (currentDiscount > 0) {
+            }
+            else if (currentDiscount > 0) {
                 increasePercentage = 10;
             }
+            else {
+                // Fallback just in case
+                increasePercentage = 0;
+                console.log("Fallback case reached");
+            }
             
+            console.log("Increase percentage set to:", increasePercentage);
+            
+            // Calculate new base amount with increase
             const increaseFactor = 1 + (increasePercentage / 100);
             const newBaseAmount = currentAmount * increaseFactor;
             
-            // If not using manual adjustments, update the prices
+            // Set term prices if not manually adjusted
             if (!manualAdjustmentCheckbox.checked) {
                 term12Price = newBaseAmount;
-                term24Price = newBaseAmount * 0.95 * 2; // Two years
-                term36Price = newBaseAmount * 0.90 * 3; // Three years
+                term24Price = newBaseAmount * 0.95 * 2; // 5% discount for 2 years
+                term36Price = newBaseAmount * 0.90 * 3; // 10% discount for 3 years
             }
             
-            // Update the pricing display
+            // Update summary display
             summaryCurrentAmount.textContent = formatCurrency(currentAmount);
             summaryIncrease.textContent = increasePercentage;
             
-            // Update the pricing table
+            // Update pricing table
             updatePricingTable();
-            
-            return {
-                currentAmount,
-                increasePercentage,
-                term12Price,
-                term24Price,
-                term36Price
-            };
         }
         
         // Update pricing table
@@ -492,10 +512,14 @@
         }
         
         // Event Listeners
-        currentAmountInput.addEventListener('change', calculatePricing);
         currentAmountInput.addEventListener('input', calculatePricing);
-        currentDiscountInput.addEventListener('change', calculatePricing);
+        currentAmountInput.addEventListener('change', calculatePricing);
+        
+        // Enhanced listeners for discount dropdown
         currentDiscountInput.addEventListener('input', calculatePricing);
+        currentDiscountInput.addEventListener('change', calculatePricing);
+        currentDiscountInput.addEventListener('click', calculatePricing);
+        
         manualAdjustmentCheckbox.addEventListener('change', function() {
             calculatePricing();
         });
@@ -517,7 +541,12 @@
             adminView.style.display = 'block';
         });
         
-        // Initialize
+        // Initialize - call this at the end
+        document.addEventListener('DOMContentLoaded', function() {
+            calculatePricing();
+        });
+        
+        // Also call it immediately
         calculatePricing();
     </script>
 </body>
