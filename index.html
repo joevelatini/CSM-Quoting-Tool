@@ -386,7 +386,7 @@
                 increasePercentage = 15;
             } else if (currentDiscount > 0 && currentDiscount < 20) {
                 increasePercentage = 10;
-            } else if (currentDiscount === 0) {
+            } else if (currentDiscount == 0 || currentDiscount === '0') {
                 increasePercentage = 0; // No increase when discount is 0%
             }
             
