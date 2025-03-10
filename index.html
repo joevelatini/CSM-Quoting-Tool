@@ -376,18 +376,22 @@
         // Calculate pricing
         function calculatePricing() {
             const currentAmount = parseFloat(currentAmountInput.value) || 10000;
-            const currentDiscount = parseFloat(currentDiscountInput.value) || 25;
+            // Use Number instead of parseFloat to handle the case when input is 0
+            const currentDiscount = Number(currentDiscountInput.value);
             let increasePercentage = 0;
             
-            // Updated logic to handle 0% discount case
-            if (currentDiscount >= 40) {
-                increasePercentage = 20;
-            } else if (currentDiscount >= 20 && currentDiscount <= 39) {
-                increasePercentage = 15;
-            } else if (currentDiscount > 0 && currentDiscount < 20) {
-                increasePercentage = 10;
-            } else if (currentDiscount == 0 || currentDiscount === '0') {
+            // Debug to check what value is being read
+            console.log("Current discount value:", currentDiscount, "Type:", typeof currentDiscount);
+            
+            // Completely restructured logic with explicit 0 check first
+            if (currentDiscount === 0) {
                 increasePercentage = 0; // No increase when discount is 0%
+            } else if (currentDiscount >= 40) {
+                increasePercentage = 20;
+            } else if (currentDiscount >= 20) {
+                increasePercentage = 15;
+            } else if (currentDiscount > 0) {
+                increasePercentage = 10;
             }
             
             const increaseFactor = 1 + (increasePercentage / 100);
@@ -489,7 +493,9 @@
         
         // Event Listeners
         currentAmountInput.addEventListener('change', calculatePricing);
+        currentAmountInput.addEventListener('input', calculatePricing);
         currentDiscountInput.addEventListener('change', calculatePricing);
+        currentDiscountInput.addEventListener('input', calculatePricing);
         manualAdjustmentCheckbox.addEventListener('change', function() {
             calculatePricing();
         });
