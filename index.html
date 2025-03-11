@@ -56,7 +56,7 @@
             font-weight: bold;
         }
         
-        input, select {
+        input {
             width: 100%;
             padding: 8px;
             border-radius: 4px;
@@ -166,6 +166,13 @@
             padding-top: 20px;
         }
         
+        .pricing-note {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        
         #quoteView {
             display: none;
         }
@@ -198,7 +205,7 @@
                         <input type="text" id="clientName">
                     </div>
                     <div class="form-group">
-                        <label for="accountManager">Customer Success Manager</label>
+                        <label for="accountManager">Account Manager</label>
                         <input type="text" id="accountManager">
                     </div>
                 </div>
@@ -210,7 +217,7 @@
                     </div>
                     <div class="form-group">
                         <label for="currentDiscount">Current Discount (%)</label>
-                        <input type="number" id="currentDiscount" value="25" min="0" max="90" step="1">
+                        <input type="number" id="currentDiscount" value="25">
                     </div>
                 </div>
                 
@@ -279,7 +286,7 @@
                     <tr>
                         <td style="padding: 5px; font-weight: bold;">Client:</td>
                         <td id="clientNameDisplay" style="padding: 5px;">-</td>
-                        <td style="padding: 5px; font-weight: bold;">Customer Success Manager:</td>
+                        <td style="padding: 5px; font-weight: bold;">Account Manager:</td>
                         <td id="accountManagerDisplay" style="padding: 5px;">-</td>
                     </tr>
                 </table>
@@ -291,7 +298,7 @@
                     <h3>12 Months</h3>
                     <div class="price" id="quote12Price">$11,500.00</div>
                     <p id="quote12Annual">$11,500.00 per year</p>
-                    <p style="font-size: 14px; color: #666; margin-top: 15px;">Auto-renewal pricing</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 15px;">Standard pricing</p>
                 </div>
                 
                 <!-- 24-Month Option -->
@@ -309,6 +316,11 @@
                     <p id="quote36Annual">$10,350.00 per year</p>
                     <p style="font-size: 14px; color: #666; margin-top: 15px;">Best value for long-term partnership</p>
                 </div>
+            </div>
+            
+            <!-- Added pricing note below the pricing cards -->
+            <div class="pricing-note">
+                <p>*Pricing does not include expansion or additional offerings</p>
             </div>
             
             <div class="footer">
@@ -373,88 +385,44 @@
             }).format(amount);
         }
         
-        // Calculate pricing - COMPLETELY REWRITTEN
+        // Calculate pricing
         function calculatePricing() {
-            const currentAmount = Number(currentAmountInput.value) || 10000;
-            const currentDiscountValue = currentDiscountInput.value;
-            const currentDiscount = Number(currentDiscountValue);
+            const currentAmount = parseFloat(currentAmountInput.value) || 10000;
+            const currentDiscount = parseFloat(currentDiscountInput.value) || 25;
+            let increasePercentage = 0;
             
-            // Debug
-            console.log("Current discount:", currentDiscountValue, 
-                        "as number:", currentDiscount, 
-                        "type:", typeof currentDiscountValue);
-            
-            // Set increase percentage based on discount tier
-            let increasePercentage;
-            
-            // Explicitly handle the zero case first
-            if (currentDiscountValue === "0" || currentDiscount === 0) {
-                increasePercentage = 0;
-                console.log("Zero discount detected, setting 0% increase");
-            }
-            // Handle specific percentage increases for discount values 1-9
-            else if (currentDiscount === 1) {
-                increasePercentage = 1;
-            }
-            else if (currentDiscount === 2) {
-                increasePercentage = 2;
-            }
-            else if (currentDiscount === 3) {
-                increasePercentage = 3;
-            }
-            else if (currentDiscount === 4) {
-                increasePercentage = 4;
-            }
-            else if (currentDiscount === 5) {
-                increasePercentage = 5;
-            }
-            else if (currentDiscount === 6) {
-                increasePercentage = 6;
-            }
-            else if (currentDiscount === 7) {
-                increasePercentage = 7;
-            }
-            else if (currentDiscount === 8) {
-                increasePercentage = 8;
-            }
-            else if (currentDiscount === 9) {
-                increasePercentage = 9;
-            }
-            // Original tiers for higher discount values
-            else if (currentDiscount >= 40) {
+            if (currentDiscount >= 40) {
                 increasePercentage = 20;
-            }
-            else if (currentDiscount >= 20) {
+            } else if (currentDiscount >= 20 && currentDiscount <= 39) {
                 increasePercentage = 15;
-            }
-            else if (currentDiscount > 9) {
+            } else if (currentDiscount > 0 && currentDiscount < 20) {
                 increasePercentage = 10;
             }
-            else {
-                // Fallback just in case
-                increasePercentage = 0;
-                console.log("Fallback case reached");
-            }
             
-            console.log("Increase percentage set to:", increasePercentage);
-            
-            // Calculate new base amount with increase
             const increaseFactor = 1 + (increasePercentage / 100);
             const newBaseAmount = currentAmount * increaseFactor;
             
-            // Set term prices if not manually adjusted
+            // If not using manual adjustments, update the prices
             if (!manualAdjustmentCheckbox.checked) {
                 term12Price = newBaseAmount;
-                term24Price = newBaseAmount * 0.95 * 2; // 5% discount for 2 years
-                term36Price = newBaseAmount * 0.90 * 3; // 10% discount for 3 years
+                term24Price = newBaseAmount * 0.95 * 2; // Two years
+                term36Price = newBaseAmount * 0.90 * 3; // Three years
             }
             
-            // Update summary display
+            // Update the pricing display
             summaryCurrentAmount.textContent = formatCurrency(currentAmount);
             summaryIncrease.textContent = increasePercentage;
             
-            // Update pricing table
+            // Update the pricing table
             updatePricingTable();
+            
+            return {
+                currentAmount,
+                increasePercentage,
+                term12Price,
+                term24Price,
+                term36Price
+            };
         }
         
         // Update pricing table
@@ -529,14 +497,8 @@
         }
         
         // Event Listeners
-        currentAmountInput.addEventListener('input', calculatePricing);
         currentAmountInput.addEventListener('change', calculatePricing);
-        
-        // Enhanced listeners for discount dropdown
-        currentDiscountInput.addEventListener('input', calculatePricing);
         currentDiscountInput.addEventListener('change', calculatePricing);
-        currentDiscountInput.addEventListener('click', calculatePricing);
-        
         manualAdjustmentCheckbox.addEventListener('change', function() {
             calculatePricing();
         });
@@ -558,12 +520,7 @@
             adminView.style.display = 'block';
         });
         
-        // Initialize - call this at the end
-        document.addEventListener('DOMContentLoaded', function() {
-            calculatePricing();
-        });
-        
-        // Also call it immediately
+        // Initialize
         calculatePricing();
     </script>
 </body>
