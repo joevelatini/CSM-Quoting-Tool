@@ -415,8 +415,19 @@
             // If not using manual adjustments, update the prices
             if (!manualAdjustmentCheckbox.checked) {
                 term12Price = newBaseAmount;
-                term24Price = newBaseAmount * 0.95 * 2; // Two years with 5% discount
                 term36Price = currentAmount * 3; // 36 months = Current Contract Amount x 3
+                
+                // Calculate 24-month price
+                if (currentDiscount <= 4) {
+                    // For 0-4% discount, match the 36-month annual rate
+                    term24Price = currentAmount * 2; // Same annual rate as 36-month
+                } else if (currentDiscount < 10) {
+                    // For 5-9% discount, add a small premium
+                    term24Price = currentAmount * 2 * 1.02; // 2% premium for shorter term
+                } else {
+                    // For 10%+ discounts, use standard calculation with increased base
+                    term24Price = newBaseAmount * 0.95 * 2; // Two years with 5% discount
+                }
             }
             
             // Update the pricing display
