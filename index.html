@@ -401,8 +401,12 @@
                 increasePercentage = 20;
             } else if (currentDiscount >= 20 && currentDiscount <= 39) {
                 increasePercentage = 15;
-            } else if (currentDiscount > 0 && currentDiscount < 20) {
+            } else if (currentDiscount >= 10 && currentDiscount <= 19) {
                 increasePercentage = 10;
+            } else if (currentDiscount >= 5 && currentDiscount <= 9) {
+                increasePercentage = 5;
+            } else if (currentDiscount >= 0 && currentDiscount <= 4) {
+                increasePercentage = 0;
             }
             
             const increaseFactor = 1 + (increasePercentage / 100);
