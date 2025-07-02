@@ -66,7 +66,7 @@
             box-sizing: border-box;
         }
         
-        .manual-adjust {
+        .checkbox-option {
             display: flex;
             align-items: center;
             padding: 10px;
@@ -143,6 +143,14 @@
             margin-top: 30px;
         }
         
+        .pricing-cards.two-cards {
+            justify-content: center;
+        }
+        
+        .pricing-cards.two-cards .pricing-card {
+            max-width: 300px;
+        }
+        
         .pricing-card {
             flex: 1;
             border: 2px solid #ddd;
@@ -173,6 +181,10 @@
             margin-top: 20px;
             font-style: italic;
             color: #666;
+        }
+        
+        .pricing-note p {
+            margin: 5px 0;
         }
         
         #quoteView {
@@ -221,9 +233,14 @@
                     </div>
                 </div>
                 
-                <label class="manual-adjust">
+                <label class="checkbox-option">
                     <input type="checkbox" id="manualAdjustment">
                     <span style="margin-left: 8px; font-weight: bold;">Enable manual price adjustments</span>
+                </label>
+                
+                <label class="checkbox-option">
+                    <input type="checkbox" id="include36Month" checked>
+                    <span style="margin-left: 8px; font-weight: bold;">Include 36-month option in quote</span>
                 </label>
                 
                 <div id="pricingInfo" style="margin-top: 20px;">
@@ -253,7 +270,7 @@
                                 <td class="text-right" id="term24Cell">$21,850.00</td>
                                 <td class="text-right" id="term24Annual">$10,925.00</td>
                             </tr>
-                            <tr>
+                            <tr id="term36Row">
                                 <td>36 Months</td>
                                 <td class="text-right" id="term36Cell">$30,000.00</td>
                                 <td class="text-right" id="term36Annual">$10,000.00</td>
@@ -298,7 +315,7 @@
                 </table>
             </div>
             
-            <div class="pricing-cards">
+            <div class="pricing-cards" id="pricingCardsContainer">
                 <!-- 12-Month Option -->
                 <div class="pricing-card">
                     <h3>12 Months</h3>
@@ -316,7 +333,7 @@
                 </div>
                 
                 <!-- 36-Month Option -->
-                <div class="pricing-card">
+                <div class="pricing-card" id="quote36Card">
                     <h3>36 Months</h3>
                     <div class="price" id="quote36Price">$30,000.00</div>
                     <p id="quote36Annual">$10,000.00 per year</p>
@@ -327,6 +344,7 @@
             <!-- Added pricing note below the pricing cards -->
             <div class="pricing-note">
                 <p>*Pricing does not include expansion or additional offerings</p>
+                <p>*Multi-year contract billed in yearly installments</p>
             </div>
             
             <div class="footer">
@@ -349,6 +367,7 @@
         const clientNameInput = document.getElementById('clientName');
         const accountManagerInput = document.getElementById('accountManager');
         const manualAdjustmentCheckbox = document.getElementById('manualAdjustment');
+        const include36MonthCheckbox = document.getElementById('include36Month');
         const viewQuoteBtn = document.getElementById('viewQuoteBtn');
         const resetBtn = document.getElementById('resetBtn');
         const printBtn = document.getElementById('printBtn');
@@ -363,6 +382,7 @@
         const term12Cell = document.getElementById('term12Cell');
         const term24Cell = document.getElementById('term24Cell');
         const term36Cell = document.getElementById('term36Cell');
+        const term36Row = document.getElementById('term36Row');
         const term12Annual = document.getElementById('term12Annual');
         const term24Annual = document.getElementById('term24Annual');
         const term36Annual = document.getElementById('term36Annual');
@@ -375,6 +395,8 @@
         const quote12Annual = document.getElementById('quote12Annual');
         const quote24Annual = document.getElementById('quote24Annual');
         const quote36Annual = document.getElementById('quote36Annual');
+        const quote36Card = document.getElementById('quote36Card');
+        const pricingCardsContainer = document.getElementById('pricingCardsContainer');
         
         // Variables to store pricing
         let term12Price = 11500;
@@ -505,6 +527,15 @@
             quote12Annual.textContent = formatCurrency(term12Price) + ' per year';
             quote24Annual.textContent = formatCurrency(term24Price / 2) + ' per year';
             quote36Annual.textContent = formatCurrency(term36Price / 3) + ' per year';
+            
+            // Show/hide 36-month option based on checkbox
+            if (include36MonthCheckbox.checked) {
+                quote36Card.style.display = 'block';
+                pricingCardsContainer.classList.remove('two-cards');
+            } else {
+                quote36Card.style.display = 'none';
+                pricingCardsContainer.classList.add('two-cards');
+            }
         }
         
         // Reset the form
@@ -514,6 +545,7 @@
             clientNameInput.value = '';
             accountManagerInput.value = '';
             manualAdjustmentCheckbox.checked = false;
+            include36MonthCheckbox.checked = true;
             calculatePricing();
         }
         
