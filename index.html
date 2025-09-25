@@ -168,6 +168,27 @@
             font-size: 24px;
             font-weight: bold;
             margin: 15px 0;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .price-amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .price-period {
+            font-size: 14px;
+            font-weight: normal;
+            color: #666;
+        }
+        
+        .contract-total {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
         }
         
         .footer {
@@ -319,24 +340,33 @@
                 <!-- 12-Month Option -->
                 <div class="pricing-card">
                     <h3>12 Months</h3>
-                    <div class="price" id="quote12Price">$11,500.00</div>
-                    <p id="quote12Annual">$11,500.00 per year</p>
+                    <div class="price">
+                        <span class="price-amount" id="quote12Annual">$11,500.00</span>
+                        <span class="price-period">per year</span>
+                    </div>
+                    <p class="contract-total" id="quote12Total">Total: $11,500.00</p>
                     <p style="font-size: 14px; color: #666; margin-top: 15px;">Standard pricing</p>
                 </div>
                 
                 <!-- 24-Month Option -->
                 <div class="pricing-card highlight">
                     <h3>24 Months</h3>
-                    <div class="price" id="quote24Price">$21,850.00</div>
-                    <p id="quote24Annual">$10,925.00 per year</p>
+                    <div class="price">
+                        <span class="price-amount" id="quote24Annual">$10,925.00</span>
+                        <span class="price-period">per year</span>
+                    </div>
+                    <p class="contract-total" id="quote24Total">Total: $21,850.00</p>
                     <p style="font-size: 14px; color: #666; margin-top: 15px;">Lock in this rate for 2 years</p>
                 </div>
                 
                 <!-- 36-Month Option -->
                 <div class="pricing-card" id="quote36Card">
                     <h3>36 Months</h3>
-                    <div class="price" id="quote36Price">$30,000.00</div>
-                    <p id="quote36Annual">$10,000.00 per year</p>
+                    <div class="price">
+                        <span class="price-amount" id="quote36Annual">$10,000.00</span>
+                        <span class="price-period">per year</span>
+                    </div>
+                    <p class="contract-total" id="quote36Total">Total: $30,000.00</p>
                     <p style="font-size: 14px; color: #666; margin-top: 15px;">Best value for long-term partnership</p>
                 </div>
             </div>
@@ -389,12 +419,9 @@
         const clientNameDisplay = document.getElementById('clientNameDisplay');
         const accountManagerDisplay = document.getElementById('accountManagerDisplay');
         const contactPerson = document.getElementById('contactPerson');
-        const quote12Price = document.getElementById('quote12Price');
-        const quote24Price = document.getElementById('quote24Price');
-        const quote36Price = document.getElementById('quote36Price');
-        const quote12Annual = document.getElementById('quote12Annual');
-        const quote24Annual = document.getElementById('quote24Annual');
-        const quote36Annual = document.getElementById('quote36Annual');
+        const quote12TotalDisplay = document.getElementById('quote12Total');
+        const quote24TotalDisplay = document.getElementById('quote24Total');
+        const quote36TotalDisplay = document.getElementById('quote36Total');
         const quote36Card = document.getElementById('quote36Card');
         const pricingCardsContainer = document.getElementById('pricingCardsContainer');
         
@@ -520,13 +547,14 @@
                 contactPerson.textContent = 'your Customer Success Manager';
             }
             
-            // Update pricing
-            quote12Price.textContent = formatCurrency(term12Price);
-            quote24Price.textContent = formatCurrency(term24Price);
-            quote36Price.textContent = formatCurrency(term36Price);
-            quote12Annual.textContent = formatCurrency(term12Price) + ' per year';
-            quote24Annual.textContent = formatCurrency(term24Price / 2) + ' per year';
-            quote36Annual.textContent = formatCurrency(term36Price / 3) + ' per year';
+            // Update pricing - Now showing annual as main price, total as secondary
+            document.getElementById('quote12Annual').textContent = formatCurrency(term12Price);
+            document.getElementById('quote24Annual').textContent = formatCurrency(term24Price / 2);
+            document.getElementById('quote36Annual').textContent = formatCurrency(term36Price / 3);
+            
+            quote12TotalDisplay.textContent = 'Total: ' + formatCurrency(term12Price);
+            quote24TotalDisplay.textContent = 'Total: ' + formatCurrency(term24Price);
+            quote36TotalDisplay.textContent = 'Total: ' + formatCurrency(term36Price);
             
             // Show/hide 36-month option based on checkbox
             if (include36MonthCheckbox.checked) {
