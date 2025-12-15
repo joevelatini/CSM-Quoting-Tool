@@ -3,534 +3,635 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ActivQ</title>
+    <title>ActivTrak Quoting Tool</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            margin: 0;
             padding: 20px;
-            color: #fff;
+            background: linear-gradient(135deg, #1a2f4d 0%, #2d5a7b 50%, #1cbbb4 100%);
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
-        }
-        
-        h1 {
-            text-align: center;
-            margin-bottom: 8px;
-            font-size: 2.2rem;
-            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 30px;
-            font-size: 0.9rem;
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 24px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .input-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
-        }
-        
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        
-        .input-group label {
-            font-size: 0.85rem;
-            color: #aaa;
-            font-weight: 500;
-        }
-        
-        .input-group input {
-            padding: 12px 16px;
+            background: white;
+            padding: 30px;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(0, 0, 0, 0.3);
-            color: #fff;
-            font-size: 1rem;
-            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
-        .input-group input:focus {
-            outline: none;
-            border-color: #00d4ff;
-            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
-        }
-        
-        .btn-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            padding: 14px 40px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
-            color: #fff;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
-        }
-        
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            margin-left: 10px;
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Results Page Styles */
-        .results-page {
-            display: none;
-        }
-        
-        .results-page.active {
-            display: block;
-        }
-        
-        .input-page.hidden {
-            display: none;
-        }
-        
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px;
-            margin-top: 20px;
-        }
-        
-        .result-item {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            padding: 14px;
+        .logo {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-left: 4px solid #444;
+            justify-content: center;
+            margin-bottom: 20px;
         }
         
-        .result-item.excellent {
-            border-left-color: #2ED4B5;
+        .logo-text {
+            font-size: 28px;
+            color: #1a2f4d;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
         }
         
-        .result-item.good {
-            border-left-color: #5BCF6D;
+        .logo-text-light {
+            font-weight: 300;
         }
         
-        .result-item.fair {
-            border-left-color: #FFC83B;
-        }
-        
-        .result-item.poor {
-            border-left-color: #ff3263;
-        }
-        
-        .result-label {
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-        
-        .result-score {
-            font-size: 1.4rem;
+        .logo-text-bold {
             font-weight: 700;
         }
         
-        .total-section {
-            text-align: center;
+        h1, h2, h3 {
+            color: #1a2f4d;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #1a2f4d;
+        }
+        
+        input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #e8f4f8;
+            border-radius: 4px;
+            margin: 15px 0;
+            border: 1px solid #1cbbb4;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #2d5a7b 0%, #1a2f4d 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th {
+            background-color: #1a2f4d;
+            color: white;
+            text-align: left;
+            padding: 10px;
+        }
+        
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .text-right {
+            text-align: right;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-primary {
+            background-color: #1cbbb4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #17a39d;
+        }
+        
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .btn-dark {
+            background-color: #1a2f4d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-dark:hover {
+            background-color: #2d5a7b;
+        }
+        
+        .pricing-cards {
+            display: flex;
+            gap: 20px;
             margin-top: 30px;
-            padding: 30px;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 44, 191, 0.1));
-            border-radius: 16px;
-            border: 2px solid rgba(0, 212, 255, 0.3);
         }
         
-        .total-label {
-            font-size: 1.2rem;
-            color: #aaa;
-            margin-bottom: 10px;
+        .pricing-cards.two-cards {
+            justify-content: center;
         }
         
-        .total-score {
-            font-size: 5rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .pricing-cards.two-cards .pricing-card {
+            max-width: 300px;
         }
         
-        .total-max {
-            font-size: 1.5rem;
+        .pricing-card {
+            flex: 1;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+        
+        .pricing-card.highlight {
+            border-color: #1cbbb4;
+            box-shadow: 0 4px 12px rgba(28, 187, 180, 0.3);
+            background: linear-gradient(180deg, #ffffff 0%, #e8f4f8 100%);
+        }
+        
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 8px;
+            color: #1a2f4d;
+        }
+        
+        .price-amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .price-period {
+            font-size: 14px;
+            font-weight: normal;
             color: #666;
         }
         
-        .grade {
-            font-size: 1.2rem;
-            margin-top: 10px;
-            padding: 8px 20px;
-            border-radius: 20px;
-            display: inline-block;
+        .contract-total {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
         }
         
-        .grade.excellent {
-            background: rgba(46, 212, 181, 0.2);
-            color: #2ED4B5;
+        .footer {
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
         }
         
-        .grade.good {
-            background: rgba(91, 207, 109, 0.2);
-            color: #5BCF6D;
+        .pricing-note {
+            text-align: center;
+            margin-top: 20px;
+            font-style: italic;
+            color: #666;
         }
         
-        .grade.fair {
-            background: rgba(255, 200, 59, 0.2);
-            color: #FFC83B;
+        .pricing-note p {
+            margin: 5px 0;
         }
         
-        .grade.poor {
-            background: rgba(255, 50, 99, 0.2);
-            color: #ff3263;
+        #quoteView {
+            display: none;
         }
-
+        
         @media print {
             body {
-                background: #1a1a2e;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                background: white;
             }
-            
-            .btn-container {
+            .no-print {
                 display: none;
             }
-            
-            .card, .total-section, .result-item {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            .container {
+                box-shadow: none;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Input Page -->
-        <div class="input-page" id="inputPage">
-            <h1>ActivQ</h1>
-            <p class="subtitle">Enter your metrics below to calculate your overall health score</p>
-            
-            <div class="card">
-                <div class="input-grid">
-                    <div class="input-group">
-                        <label>Users</label>
-                        <input type="number" id="users" placeholder="Enter number of users">
-                    </div>
-                    <div class="input-group">
-                        <label>Instances of Potential False Activity</label>
-                        <input type="number" id="falseActivity" placeholder="Total instances">
-                    </div>
-                    <div class="input-group">
-                        <label>Instances of High Duration Activity</label>
-                        <input type="number" id="highDuration" placeholder="Total instances">
-                    </div>
-                    <div class="input-group">
-                        <label>Unproductive Website Time</label>
-                        <input type="number" step="0.01" id="unprodWebsite" placeholder="Total time">
-                    </div>
-                    <div class="input-group">
-                        <label>Unproductive Application Time</label>
-                        <input type="number" step="0.01" id="unprodApp" placeholder="Total time">
-                    </div>
-                    <div class="input-group">
-                        <label>Missing Productivity Goal (%)</label>
-                        <input type="number" step="0.1" id="missingGoal" placeholder="Percentage">
-                    </div>
-                    <div class="input-group">
-                        <label>Healthy %</label>
-                        <input type="number" step="0.1" id="healthy" placeholder="Percentage">
-                    </div>
-                    <div class="input-group">
-                        <label>Overutilized %</label>
-                        <input type="number" step="0.1" id="overutilized" placeholder="Percentage">
-                    </div>
-                    <div class="input-group">
-                        <label>Underutilized %</label>
-                        <input type="number" step="0.1" id="underutilized" placeholder="Percentage">
-                    </div>
+        <!-- Admin View -->
+        <div id="adminView">
+            <div class="logo">
+                <div class="logo-text">
+                    <span class="logo-text-light">Activ</span><span class="logo-text-bold">Trak</span>
                 </div>
             </div>
             
-            <div class="btn-container">
-                <button class="btn btn-primary" onclick="calculate()">Calculate</button>
+            <h1>ActivTrak Renewal Quote</h1>
+            
+            <div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="clientName">Client Name</label>
+                        <input type="text" id="clientName">
+                    </div>
+                    <div class="form-group">
+                        <label for="accountManager">Account Manager</label>
+                        <input type="text" id="accountManager">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="currentAmount">Current Contract Amount ($)</label>
+                        <input type="number" id="currentAmount" value="10000">
+                    </div>
+                    <div class="form-group">
+                        <label for="currentDiscount">Current Discount (%)</label>
+                        <input type="number" id="currentDiscount" value="25">
+                    </div>
+                </div>
+                
+                <label class="checkbox-option">
+                    <input type="checkbox" id="manualAdjustment">
+                    <span style="margin-left: 8px; font-weight: bold;">Enable manual price adjustments</span>
+                </label>
+                
+                <label class="checkbox-option">
+                    <input type="checkbox" id="include36Month" checked>
+                    <span style="margin-left: 8px; font-weight: bold;">Include 36-month option in quote</span>
+                </label>
+                
+                <div id="pricingInfo" style="margin-top: 20px;">
+                    <h2>Pricing Options</h2>
+                    
+                    <div class="summary">
+                        <p><strong>Current Contract:</strong> <span id="summaryCurrentAmount">$10,000.00</span></p>
+                        <p><strong>Applied Increase:</strong> <span id="summaryIncrease">15</span>%</p>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Contract Term</th>
+                                <th class="text-right">Total Price</th>
+                                <th class="text-right">Annual Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>12 Months</td>
+                                <td class="text-right" id="term12Cell">$11,500.00</td>
+                                <td class="text-right" id="term12Annual">$11,500.00</td>
+                            </tr>
+                            <tr>
+                                <td>24 Months</td>
+                                <td class="text-right" id="term24Cell">$21,850.00</td>
+                                <td class="text-right" id="term24Annual">$10,925.00</td>
+                            </tr>
+                            <tr id="term36Row">
+                                <td>36 Months</td>
+                                <td class="text-right" id="term36Cell">$30,000.00</td>
+                                <td class="text-right" id="term36Annual">$10,000.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="button-group">
+                        <button id="viewQuoteBtn" class="btn-primary">View Client-Ready Quote</button>
+                        <button id="resetBtn" class="btn-secondary">Reset Form</button>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- Results Page -->
-        <div class="results-page" id="resultsPage">
-            <h1>ActivQ</h1>
-            <p class="subtitle">Health Score Results</p>
-            
-            <div class="card">
-                <h3 style="margin-bottom: 16px; color: #aaa; font-size: 0.9rem;">Individual Scores</h3>
-                <div class="results-grid">
-                    <div class="result-item" id="res-false">
-                        <div class="result-label">False Activity</div>
-                        <div class="result-score" id="score-false">--</div>
-                    </div>
-                    <div class="result-item" id="res-high">
-                        <div class="result-label">High Duration</div>
-                        <div class="result-score" id="score-high">--</div>
-                    </div>
-                    <div class="result-item" id="res-web">
-                        <div class="result-label">Unprod. Website</div>
-                        <div class="result-score" id="score-web">--</div>
-                    </div>
-                    <div class="result-item" id="res-app">
-                        <div class="result-label">Unprod. App</div>
-                        <div class="result-score" id="score-app">--</div>
-                    </div>
-                    <div class="result-item" id="res-missing">
-                        <div class="result-label">Missing Goal %</div>
-                        <div class="result-score" id="score-missing">--</div>
-                    </div>
-                    <div class="result-item" id="res-healthy">
-                        <div class="result-label">Healthy %</div>
-                        <div class="result-score" id="score-healthy">--</div>
-                    </div>
-                    <div class="result-item" id="res-over">
-                        <div class="result-label">Overutilized %</div>
-                        <div class="result-score" id="score-over">--</div>
-                    </div>
-                    <div class="result-item" id="res-under">
-                        <div class="result-label">Underutilized %</div>
-                        <div class="result-score" id="score-under">--</div>
-                    </div>
+        <!-- Client Quote View -->
+        <div id="quoteView">
+            <div class="logo">
+                <div class="logo-text">
+                    <span class="logo-text-light">Activ</span><span class="logo-text-bold">Trak</span>
                 </div>
             </div>
             
-            <div class="total-section">
-                <div class="total-label">ActivQ</div>
-                <div>
-                    <span class="total-score" id="total">0</span>
-                    <span class="total-max"> / 100</span>
-                </div>
-                <div class="grade" id="grade">--</div>
+            <h1 style="text-align: center;">ActivTrak Renewal Options</h1>
+            
+            <div id="clientInfo" style="border: 1px solid #ddd; border-radius: 4px; padding: 15px; margin-bottom: 20px; display: none;">
+                <table style="width: 100%;">
+                    <tr>
+                        <td style="padding: 5px; font-weight: bold;">Client:</td>
+                        <td id="clientNameDisplay" style="padding: 5px;">-</td>
+                        <td style="padding: 5px; font-weight: bold;">Account Manager:</td>
+                        <td id="accountManagerDisplay" style="padding: 5px;">-</td>
+                    </tr>
+                </table>
             </div>
             
-            <div class="btn-container">
-                <button class="btn btn-secondary" onclick="goBack()">Back</button>
-                <button class="btn btn-primary" onclick="window.print()">Save as PDF</button>
+            <div class="pricing-cards" id="pricingCardsContainer">
+                <!-- 12-Month Option -->
+                <div class="pricing-card">
+                    <h3>12 Months</h3>
+                    <div class="price">
+                        <span class="price-amount" id="quote12Annual">$11,500.00</span>
+                        <span class="price-period">per year</span>
+                    </div>
+                    <p class="contract-total" id="quote12Total">Total: $11,500.00</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 15px;">Standard pricing</p>
+                </div>
+                
+                <!-- 24-Month Option -->
+                <div class="pricing-card highlight">
+                    <h3>24 Months</h3>
+                    <div class="price">
+                        <span class="price-amount" id="quote24Annual">$10,925.00</span>
+                        <span class="price-period">per year</span>
+                    </div>
+                    <p class="contract-total" id="quote24Total">Total: $21,850.00</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 15px;">Lock in this rate for 2 years</p>
+                </div>
+                
+                <!-- 36-Month Option -->
+                <div class="pricing-card" id="quote36Card">
+                    <h3>36 Months</h3>
+                    <div class="price">
+                        <span class="price-amount" id="quote36Annual">$10,000.00</span>
+                        <span class="price-period">per year</span>
+                    </div>
+                    <p class="contract-total" id="quote36Total">Total: $30,000.00</p>
+                    <p style="font-size: 14px; color: #666; margin-top: 15px;">Best value for long-term partnership</p>
+                </div>
+            </div>
+            
+            <div class="pricing-note">
+                <p>*Pricing does not include expansion or additional offerings</p>
+                <p>*Multi-year contract billed in yearly installments</p>
+            </div>
+            
+            <div class="footer">
+                <p style="font-size: 14px;">
+                    For questions or customizations, please contact <span id="contactPerson">your Customer Success Manager</span>.
+                </p>
+                
+                <div class="button-group no-print">
+                    <button id="printBtn" class="btn-dark">Print Quote</button>
+                    <button id="backBtn" class="btn-primary">Back to Quote Generator</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const ranges14 = [
-            { max: 0.10, score: 14 }, { max: 0.20, score: 13 }, { max: 0.40, score: 12 },
-            { max: 0.55, score: 11 }, { max: 0.70, score: 10 }, { max: 0.85, score: 9 },
-            { max: 1.00, score: 8 }, { max: 1.15, score: 7 }, { max: 1.35, score: 6 },
-            { max: 1.55, score: 5 }, { max: 1.70, score: 4 }, { max: 1.85, score: 3 },
-            { max: 1.99, score: 2 }, { max: Infinity, score: 1 }
-        ];
+        // Elements
+        const currentAmountInput = document.getElementById('currentAmount');
+        const currentDiscountInput = document.getElementById('currentDiscount');
+        const clientNameInput = document.getElementById('clientName');
+        const accountManagerInput = document.getElementById('accountManager');
+        const manualAdjustmentCheckbox = document.getElementById('manualAdjustment');
+        const include36MonthCheckbox = document.getElementById('include36Month');
+        const viewQuoteBtn = document.getElementById('viewQuoteBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const printBtn = document.getElementById('printBtn');
+        const backBtn = document.getElementById('backBtn');
         
-        const rangesWeb = [
-            { max: 0.07, score: 14 }, { max: 0.14, score: 13 }, { max: 0.21, score: 12 },
-            { max: 0.28, score: 11 }, { max: 0.35, score: 10 }, { max: 0.42, score: 9 },
-            { max: 0.49, score: 8 }, { max: 0.56, score: 7 }, { max: 0.63, score: 6 },
-            { max: 0.70, score: 5 }, { max: 0.77, score: 4 }, { max: 0.84, score: 3 },
-            { max: 0.99, score: 2 }, { max: Infinity, score: 1 }
-        ];
+        // Display elements
+        const adminView = document.getElementById('adminView');
+        const quoteView = document.getElementById('quoteView');
+        const clientInfo = document.getElementById('clientInfo');
+        const summaryCurrentAmount = document.getElementById('summaryCurrentAmount');
+        const summaryIncrease = document.getElementById('summaryIncrease');
+        const term12Cell = document.getElementById('term12Cell');
+        const term24Cell = document.getElementById('term24Cell');
+        const term36Cell = document.getElementById('term36Cell');
+        const term36Row = document.getElementById('term36Row');
+        const term12Annual = document.getElementById('term12Annual');
+        const term24Annual = document.getElementById('term24Annual');
+        const term36Annual = document.getElementById('term36Annual');
+        const clientNameDisplay = document.getElementById('clientNameDisplay');
+        const accountManagerDisplay = document.getElementById('accountManagerDisplay');
+        const contactPerson = document.getElementById('contactPerson');
+        const quote12TotalDisplay = document.getElementById('quote12Total');
+        const quote24TotalDisplay = document.getElementById('quote24Total');
+        const quote36TotalDisplay = document.getElementById('quote36Total');
+        const quote36Card = document.getElementById('quote36Card');
+        const pricingCardsContainer = document.getElementById('pricingCardsContainer');
         
-        const rangesApp = [
-            { max: 0.03, score: 14 }, { max: 0.06, score: 13 }, { max: 0.09, score: 12 },
-            { max: 0.12, score: 11 }, { max: 0.15, score: 10 }, { max: 0.18, score: 9 },
-            { max: 0.21, score: 8 }, { max: 0.24, score: 7 }, { max: 0.27, score: 6 },
-            { max: 0.33, score: 5 }, { max: 0.38, score: 4 }, { max: 0.43, score: 3 },
-            { max: 0.49, score: 2 }, { max: Infinity, score: 1 }
-        ];
+        // Variables to store pricing
+        let term12Price = 11500;
+        let term24Price = 21850;
+        let term36Price = 30000;
         
-        const rangesMissing = [
-            { max: 3, score: 14 }, { max: 6, score: 13 }, { max: 10, score: 12 },
-            { max: 14, score: 11 }, { max: 18, score: 10 }, { max: 22, score: 9 },
-            { max: 26, score: 8 }, { max: 30, score: 7 }, { max: 34, score: 6 },
-            { max: 38, score: 5 }, { max: 42, score: 4 }, { max: 46, score: 3 },
-            { max: 49, score: 2 }, { max: Infinity, score: 1 }
-        ];
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
         
-        const rangesHealthy = [
-            { min: -2, score: 10 }, { min: -4, score: 9 }, { min: -6, score: 8 },
-            { min: -9, score: 7 }, { min: -12, score: 6 }, { min: -15, score: 5 },
-            { min: -18, score: 4 }, { min: -22, score: 3 }, { min: -28, score: 2 },
-            { min: -Infinity, score: 1 }
-        ];
-        
-        const rangesOver = [
-            { min: -2, score: 10 }, { min: -4, score: 9 }, { min: -7, score: 8 },
-            { min: -10, score: 7 }, { min: -13, score: 6 }, { min: -16, score: 5 },
-            { min: -19, score: 4 }, { min: -23, score: 3 }, { min: -30, score: 2 },
-            { min: -Infinity, score: 1 }
-        ];
-        
-        const rangesUnder = [
-            { max: 13, score: 10 }, { max: 12, score: 9 }, { max: 9, score: 8 },
-            { max: 6, score: 7 }, { max: 3, score: 6 }, { max: 0, score: 5 },
-            { max: -2, score: 4 }, { max: -4, score: 3 }, { max: -6, score: 2 },
-            { max: -Infinity, score: 1 }
-        ];
-
-        function getScore(val, ranges, useMin = false) {
-            if (useMin) {
-                for (let r of ranges) {
-                    if (val >= r.min) return r.score;
+        // Calculate pricing
+        function calculatePricing() {
+            const currentAmount = parseFloat(currentAmountInput.value) || 10000;
+            const currentDiscount = parseFloat(currentDiscountInput.value) || 25;
+            let increasePercentage = 0;
+            
+            if (currentDiscount >= 40) {
+                increasePercentage = 20;
+            } else if (currentDiscount >= 20 && currentDiscount <= 39) {
+                increasePercentage = 15;
+            } else if (currentDiscount >= 10 && currentDiscount <= 19) {
+                increasePercentage = 10;
+            } else if (currentDiscount >= 5 && currentDiscount <= 9) {
+                increasePercentage = 5;
+            } else if (currentDiscount >= 0 && currentDiscount <= 4) {
+                increasePercentage = 0;
+            }
+            
+            const increaseFactor = 1 + (increasePercentage / 100);
+            const newBaseAmount = currentAmount * increaseFactor;
+            
+            // If not using manual adjustments, update the prices
+            if (!manualAdjustmentCheckbox.checked) {
+                term12Price = newBaseAmount;
+                term36Price = currentAmount * 3;
+                
+                // Calculate 24-month price
+                if (currentDiscount <= 4) {
+                    term24Price = currentAmount * 2;
+                } else if (currentDiscount < 10) {
+                    term24Price = currentAmount * 2 * 1.02;
+                } else {
+                    term24Price = newBaseAmount * 0.95 * 2;
                 }
-                return 1;
             }
-            for (let r of ranges) {
-                if (val <= r.max) return r.score;
-            }
-            return 1;
-        }
-
-        function getScoreUnder(val, ranges) {
-            for (let r of ranges) {
-                if (val >= r.max) return r.score;
-            }
-            return 1;
-        }
-
-        function getClass(score, max) {
-            let pct = score / max;
-            if (pct >= 0.85) return 'excellent';
-            if (pct >= 0.7) return 'good';
-            if (pct >= 0.5) return 'fair';
-            return 'poor';
-        }
-
-        function calculate() {
-            let users = parseFloat(document.getElementById('users').value) || 0;
-            let fa = parseFloat(document.getElementById('falseActivity').value) || 0;
-            let hd = parseFloat(document.getElementById('highDuration').value) || 0;
-            let uw = parseFloat(document.getElementById('unprodWebsite').value) || 0;
-            let ua = parseFloat(document.getElementById('unprodApp').value) || 0;
-            let mg = parseFloat(document.getElementById('missingGoal').value) || 0;
-            let hy = parseFloat(document.getElementById('healthy').value) || 0;
-            let ov = parseFloat(document.getElementById('overutilized').value) || 0;
-            let un = parseFloat(document.getElementById('underutilized').value) || 0;
-
-            let faRate = users ? fa / users : 0;
-            let hdRate = users ? hd / users : 0;
-            let uwRate = users ? uw / users : 0;
-            let uaRate = users ? ua / users : 0;
-            let hyAdj = hy - 70;
-            let ovAdj = 8 - ov;
-            let unAdj = 22 - un;
-
-            let s1 = getScore(faRate, ranges14);
-            let s2 = getScore(hdRate, ranges14);
-            let s3 = getScore(uwRate, rangesWeb);
-            let s4 = getScore(uaRate, rangesApp);
-            let s5 = getScore(mg, rangesMissing);
-            let s6 = getScore(hyAdj, rangesHealthy, true);
-            let s7 = getScore(ovAdj, rangesOver, true);
-            let s8 = getScoreUnder(unAdj, rangesUnder);
-
-            document.getElementById('score-false').textContent = s1;
-            document.getElementById('score-high').textContent = s2;
-            document.getElementById('score-web').textContent = s3;
-            document.getElementById('score-app').textContent = s4;
-            document.getElementById('score-missing').textContent = s5;
-            document.getElementById('score-healthy').textContent = s6;
-            document.getElementById('score-over').textContent = s7;
-            document.getElementById('score-under').textContent = s8;
-
-            ['false', 'high', 'web', 'app', 'missing'].forEach((id, i) => {
-                let s = [s1, s2, s3, s4, s5][i];
-                document.getElementById('res-' + id).className = 'result-item ' + getClass(s, 14);
-            });
             
-            ['healthy', 'over', 'under'].forEach((id, i) => {
-                let s = [s6, s7, s8][i];
-                document.getElementById('res-' + id).className = 'result-item ' + getClass(s, 10);
-            });
-
-            let total = s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
-            document.getElementById('total').textContent = total;
+            // Update the pricing display
+            summaryCurrentAmount.textContent = formatCurrency(currentAmount);
+            summaryIncrease.textContent = increasePercentage;
             
-            let gradeEl = document.getElementById('grade');
-            let totalEl = document.getElementById('total');
+            // Update the pricing table
+            updatePricingTable();
             
-            if (total >= 90) {
-                gradeEl.textContent = 'Excellent';
-                gradeEl.className = 'grade excellent';
-                totalEl.style.background = 'none';
-                totalEl.style.color = '#2ED4B5';
-                totalEl.style.webkitTextFillColor = '#2ED4B5';
-            } else if (total >= 80) {
-                gradeEl.textContent = 'Good';
-                gradeEl.className = 'grade good';
-                totalEl.style.background = 'none';
-                totalEl.style.color = '#5BCF6D';
-                totalEl.style.webkitTextFillColor = '#5BCF6D';
-            } else if (total >= 70) {
-                gradeEl.textContent = 'Fair';
-                gradeEl.className = 'grade fair';
-                totalEl.style.background = 'none';
-                totalEl.style.color = '#FFC83B';
-                totalEl.style.webkitTextFillColor = '#FFC83B';
+            return {
+                currentAmount,
+                increasePercentage,
+                term12Price,
+                term24Price,
+                term36Price
+            };
+        }
+        
+        // Update pricing table
+        function updatePricingTable() {
+            if (manualAdjustmentCheckbox.checked) {
+                // Create input elements for manual entry
+                term12Cell.innerHTML = `<input type="number" value="${term12Price}" style="width: 120px; padding: 5px; text-align: right;" id="term12Input">`;
+                term24Cell.innerHTML = `<input type="number" value="${term24Price}" style="width: 120px; padding: 5px; text-align: right;" id="term24Input">`;
+                term36Cell.innerHTML = `<input type="number" value="${term36Price}" style="width: 120px; padding: 5px; text-align: right;" id="term36Input">`;
+                
+                // Add event listeners to the new inputs
+                document.getElementById('term12Input').addEventListener('change', function() {
+                    term12Price = parseFloat(this.value) || term12Price;
+                    term12Annual.textContent = formatCurrency(term12Price);
+                });
+                
+                document.getElementById('term24Input').addEventListener('change', function() {
+                    term24Price = parseFloat(this.value) || term24Price;
+                    term24Annual.textContent = formatCurrency(term24Price / 2);
+                });
+                
+                document.getElementById('term36Input').addEventListener('change', function() {
+                    term36Price = parseFloat(this.value) || term36Price;
+                    term36Annual.textContent = formatCurrency(term36Price / 3);
+                });
             } else {
-                gradeEl.textContent = 'Needs Improvement';
-                gradeEl.className = 'grade poor';
-                totalEl.style.background = 'none';
-                totalEl.style.color = '#ff3263';
-                totalEl.style.webkitTextFillColor = '#ff3263';
+                // Display formatted currency
+                term12Cell.textContent = formatCurrency(term12Price);
+                term24Cell.textContent = formatCurrency(term24Price);
+                term36Cell.textContent = formatCurrency(term36Price);
             }
             
-            // Show results page, hide input page
-            document.getElementById('inputPage').classList.add('hidden');
-            document.getElementById('resultsPage').classList.add('active');
+            // Update annual prices
+            term12Annual.textContent = formatCurrency(term12Price);
+            term24Annual.textContent = formatCurrency(term24Price / 2);
+            term36Annual.textContent = formatCurrency(term36Price / 3);
         }
-
-        function goBack() {
-            document.getElementById('inputPage').classList.remove('hidden');
-            document.getElementById('resultsPage').classList.remove('active');
+        
+        // Update quote view
+        function updateQuoteView() {
+            const clientName = clientNameInput.value;
+            const accountManager = accountManagerInput.value;
+            
+            // Update client info section
+            if (clientName) {
+                clientInfo.style.display = 'block';
+                clientNameDisplay.textContent = clientName;
+                accountManagerDisplay.textContent = accountManager || '-';
+                contactPerson.textContent = accountManager || 'your Customer Success Manager';
+            } else {
+                clientInfo.style.display = 'none';
+                contactPerson.textContent = 'your Customer Success Manager';
+            }
+            
+            // Update pricing
+            document.getElementById('quote12Annual').textContent = formatCurrency(term12Price);
+            document.getElementById('quote24Annual').textContent = formatCurrency(term24Price / 2);
+            document.getElementById('quote36Annual').textContent = formatCurrency(term36Price / 3);
+            
+            quote12TotalDisplay.textContent = 'Total: ' + formatCurrency(term12Price);
+            quote24TotalDisplay.textContent = 'Total: ' + formatCurrency(term24Price);
+            quote36TotalDisplay.textContent = 'Total: ' + formatCurrency(term36Price);
+            
+            // Show/hide 36-month option
+            if (include36MonthCheckbox.checked) {
+                quote36Card.style.display = 'block';
+                pricingCardsContainer.classList.remove('two-cards');
+            } else {
+                quote36Card.style.display = 'none';
+                pricingCardsContainer.classList.add('two-cards');
+            }
         }
+        
+        // Reset the form
+        function resetForm() {
+            currentAmountInput.value = 10000;
+            currentDiscountInput.value = 25;
+            clientNameInput.value = '';
+            accountManagerInput.value = '';
+            manualAdjustmentCheckbox.checked = false;
+            include36MonthCheckbox.checked = true;
+            calculatePricing();
+        }
+        
+        // Event Listeners
+        currentAmountInput.addEventListener('change', calculatePricing);
+        currentDiscountInput.addEventListener('change', calculatePricing);
+        manualAdjustmentCheckbox.addEventListener('change', function() {
+            calculatePricing();
+        });
+        
+        viewQuoteBtn.addEventListener('click', function() {
+            updateQuoteView();
+            adminView.style.display = 'none';
+            quoteView.style.display = 'block';
+        });
+        
+        resetBtn.addEventListener('click', resetForm);
+        
+        printBtn.addEventListener('click', function() {
+            window.print();
+        });
+        
+        backBtn.addEventListener('click', function() {
+            quoteView.style.display = 'none';
+            adminView.style.display = 'block';
+        });
+        
+        // Initialize
+        calculatePricing();
     </script>
 </body>
 </html>
